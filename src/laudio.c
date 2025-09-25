@@ -16,8 +16,10 @@
 */
 
 #include <stdio.h>
-#include "colors.h"
 #include "laudio.h"
+
+// Initial state, to avoid recreating or calling functions more than once.
+static int initial_state_audio = 0;
 
 // Initializes the audio system with the given parameters.
 // freq: Sample rate (e.g., 44100)
@@ -25,63 +27,58 @@
 // channels: Number of channels (e.g., 2 for stereo)
 // chunksize: Size of audio chunks
 int init_audio(int freq, int format, int channels, int chunksize) {
+    if(initial_state_audio) {
+        return 1;
+    }
+
     if (SDL_Init(SDL_INIT_AUDIO) < 0){
-        fprintf(stderr, RED "SDL Init Err: %s\n" RESET, SDL_GetError());
         return 0;
     }
 
     if (Mix_OpenAudio(freq, format, channels, chunksize) < 0) {
-        fprintf(stderr, RED "Mix Open Audio Err: %s\n" RESET, Mix_GetError());
         return 0;
     }
 
     // Reserve any channels
     Mix_AllocateChannels(16);
-
+    initial_state_audio = 1;
     return 1;
 }
 
 // Loads and plays an audio file (e.g., MP3).
-// Returns 0 on error, -1 on success.
 int play_audio(const char *fileaudio) {
     Mix_Music *music = Mix_LoadMUS(fileaudio);
 
     if (!music) {
-        fprintf(stderr, RED "Error to load %s: %s\n", fileaudio, Mix_GetError());
         return 0;
     }
 
     if (Mix_PlayMusic(music, 1) == -1) {
-        fprintf(stderr, RED "Error to play: %s\n" RESET, Mix_GetError());
+        Mix_FreeMusic(music);
         return 0;
     }
 
-    return -1;
+    return 1;
 }
 
 // Pauses the currently playing music.
-
 void pause_audio() {
-    if (Mix_PlayingMusic()) {
+    if (Mix_PlayingMusic() || Mix_PausedMusic()) {
         Mix_PauseMusic();
     }
 }
 // Resumes paused music.
-
-
 void resume_audio() {
-    if (Mix_PlayingMusic()) {
+    if (Mix_PausedMusic()) {
         Mix_ResumeMusic();
     }
-// Stops the music playback.
 }
 
 
+// Stop music.
 void stop_audio() {
-// Sets the music volume (0-128).
     Mix_HaltMusic();
 }
-
 
 // Closes the audio system and frees resources.
 void set_audio_volume(int volume) {
@@ -89,6 +86,14 @@ void set_audio_volume(int volume) {
 }
 
 void close_audio() {
-    Mix_CloseAudio();
-    SDL_Quit();
+    if(initial_state_audio) {
+        Mix_CloseAudio();
+        SDL_Quit();
+        initial_state_audio = 0;
+    }
+}
+
+// State initialize audio
+int audio_is_initialized() {
+    return  initial_state_audio;
 }
