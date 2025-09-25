@@ -40,4 +40,7 @@ void set_audio_volume(int volume);
 
 // Closes the audio system and frees resources
 void close_audio();
+
+// State audio
+int audio_is_initialized();
 #endif 
