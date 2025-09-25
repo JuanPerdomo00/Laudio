@@ -18,7 +18,6 @@
 #include <lua.h>
 #include <lauxlib.h>
 #include "laudio.h"
-#include "colors.h"
 
 // Lua function: audio.init(freq, format, channels, chunksize)
 // Initializes the audio system from Lua.
@@ -30,9 +29,11 @@ static int l_init_audio(lua_State *L) {
 
     if(!init_audio(freq, format, channel, chunksize)) {
         lua_pushnil(L);
-        lua_pushstring(L, RED "Error Mix" RESET);
+        lua_pushstring(L, Mix_GetError());
         return 2;
     }
+
+    lua_pushboolean(L, 1);
     return 1;
 }
 
@@ -48,8 +49,20 @@ static int l_close_audio(lua_State *L) {
 // Plays an audio file from Lua.
 static int l_play_audio(lua_State *L) {
     const char *fileaudio  = luaL_checkstring(L, 1);
-    lua_pushboolean(L, play_audio(fileaudio));
-    return 1;
+    if (!audio_is_initialized()) {
+        lua_pushnil(L);
+        lua_pushstring(L, "Audio not initialized");
+        return 2;
+    }
+
+    if (play_audio(fileaudio)) {
+        lua_pushboolean(L, 1);
+        return 1;
+    }
+
+    lua_pushnil(L);
+    lua_pushstring(L, Mix_GetError());
+    return 2;
 }
 
 
