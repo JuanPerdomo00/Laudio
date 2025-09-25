@@ -47,5 +47,5 @@ os.execute("sleep 10")
 print("Stop...")
 audio.stop()
 audio.close()
-
+audio.close()
 print("Audio closed")
