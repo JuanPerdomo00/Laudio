@@ -1,16 +1,13 @@
 --[[
     Copyright (C) 2025  Juan Perdomo (Jakepys)
-
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ]] --
@@ -19,39 +16,43 @@ local audio = require("laudio")
 
 local ok, err = audio.init()
 if not ok then
-	print("Error initializing audio", err)
-	io.execute("exit 1")
+    print("Error initializing audio", err)
+    os.execute("exit 1")
 end
 
 print("Audio initialized")
 audio.play("FreeSWSong.ogg")
+-- audio.play("FreeSWSong.ogg")
 
-print("Playing...")
-os.execute("sleep 10")
+if audio.is_playing() then
+    print("Playing...")
+    os.execute("sleep 10")
 
-print("Pause...")
-audio.pause()
-os.execute("sleep 3")
+    print("Pause...")
+    audio.pause()
+    os.execute("sleep 3")
 
-print("Resume...")
-audio.resume()
+    print("Resume...")
+    audio.resume()
 
-print("Volume control...")
-for i = 0, 100, 10 do
-	-- validated volume in lua
-	if i <= 0 or i > 100 then
-		print("No acept volume 0 or min 0 or up 100")
-		goto continue
-	end
-	print("Volume: " .. i)
-	audio.set_audio_volume(i)
-	os.execute("sleep 1")
-    ::continue::
+    print("Volume control...")
+    for i = 0, 100, 10 do
+        -- validated volume in lua
+        if i <= 0 or i > 100 then
+            print("No acept volume 0 or min 0 or up 100")
+            goto continue
+        end
+        print("Volume: " .. i)
+        audio.set_audio_volume(i)
+        os.execute("sleep 1")
+        ::continue::
+    end
+
+    os.execute("sleep 10")
+    print("Stop...")
+    audio.stop()
+    audio.close()
+    print("Audio closed")
+else
+    print("No is playing")
 end
-
-os.execute("sleep 10")
-print("Stop...")
-audio.stop()
-audio.close()
-audio.close()
-print("Audio closed")
