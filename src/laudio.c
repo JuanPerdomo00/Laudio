@@ -15,7 +15,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <stdio.h>
 #include "laudio.h"
 
 // Initial state, to avoid recreating or calling functions more than once.
