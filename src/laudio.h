@@ -43,4 +43,7 @@ void close_audio();
 
 // State audio
 int audio_is_initialized();
+
+// is playing audio
+int is_playing_audio();
 #endif 
