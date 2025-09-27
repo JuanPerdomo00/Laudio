@@ -1,4 +1,4 @@
---[[ 
+--[[
     Copyright (C) 2025  Juan Perdomo (Jakepys)
 
     This program is free software: you can redistribute it and/or modify
@@ -13,14 +13,14 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
-]]--
+]] --
 
 local audio = require("laudio")
 
 local ok, err = audio.init()
 if not ok then
-    print("Error initializing audio", err)
-    return 
+	print("Error initializing audio", err)
+	io.execute("exit 1")
 end
 
 print("Audio initialized")
@@ -38,9 +38,15 @@ audio.resume()
 
 print("Volume control...")
 for i = 0, 100, 10 do
-    print("Volume: ".. i)
-    audio.set_audio_volume(i)
-    os.execute("sleep 1")
+	-- validated volume in lua
+	if i <= 0 or i > 100 then
+		print("No acept volume 0 or min 0 or up 100")
+		goto continue
+	end
+	print("Volume: " .. i)
+	audio.set_audio_volume(i)
+	os.execute("sleep 1")
+    ::continue::
 end
 
 os.execute("sleep 10")
