@@ -10,6 +10,12 @@ make
 lua -e "print(package.cpath)"
 # Copy the compiled library to the correct path
 sudo cp laudio.so /usr/local/lib/lua/5.4/
+
+# or use install.lua
+# If the Lua installation path is different, please check
+# it. If the folder is different from 5.4, modify the
+# script or do it manually. (It's faster if you do it  #manually. XD)
+lua install.lua
 ```
 
 # explanation and use of the API in Lua
@@ -37,6 +43,9 @@ audio.setVolume(64)
 
 -- Close and clean up
 audio.close()
+
+-- is playing audio
+audio.is_playing()
 ```
 
 # Supported Formats
