@@ -100,6 +100,13 @@ static int l_set_audio_volume(lua_State *L) {
 }
 
 
+// Lua function: audio.is_paying()
+// Return a boolean if is playing music
+static int l_is_playing(lua_State *L) {
+    lua_pushboolean(L, is_playing_audio());
+    return 1;
+}
+
 
 // Lua register func
 int luaopen_laudio(lua_State *L) {
@@ -111,6 +118,7 @@ int luaopen_laudio(lua_State *L) {
         {"resume", l_resume_audio},
         {"stop", l_stop_audio},
         {"set_audio_volume", l_set_audio_volume},
+        {"is_playing", l_is_playing},
         {NULL, NULL}
     };
 
