@@ -19,6 +19,9 @@
 
 // Initial state, to avoid recreating or calling functions more than once.
 static int initial_state_audio = 0;
+// Actual Music
+static Mix_Music *actual_music = NULL;
+
 
 // Initializes the audio system with the given parameters.
 // freq: Sample rate (e.g., 44100)
@@ -46,6 +49,12 @@ int init_audio(int freq, int format, int channels, int chunksize) {
 
 // Loads and plays an audio file (e.g., MP3).
 int play_audio(const char *fileaudio) {
+    if(actual_music) {
+        Mix_FreeMusic(actual_music);
+        actual_music = NULL;
+    }
+
+
     Mix_Music *music = Mix_LoadMUS(fileaudio);
 
     if (!music) {
@@ -56,7 +65,7 @@ int play_audio(const char *fileaudio) {
         Mix_FreeMusic(music);
         return 0;
     }
-
+    actual_music = music;
     return 1;
 }
 
@@ -77,6 +86,10 @@ void resume_audio() {
 // Stop music.
 void stop_audio() {
     Mix_HaltMusic();
+    if(actual_music) {
+        Mix_FreeMusic(actual_music);
+        actual_music = NULL;
+    }
 }
 
 // Closes the audio system and frees resources.
@@ -86,6 +99,10 @@ void set_audio_volume(int volume) {
 
 void close_audio() {
     if(initial_state_audio) {
+        if(actual_music) {
+            Mix_FreeMusic(actual_music);
+            actual_music = NULL;
+        }
         Mix_CloseAudio();
         SDL_Quit();
         initial_state_audio = 0;
@@ -95,4 +112,9 @@ void close_audio() {
 // State initialize audio
 int audio_is_initialized() {
     return  initial_state_audio;
+}
+
+// Is playing audio
+int is_playing_audio() {
+    return Mix_PlayingMusic();
 }
